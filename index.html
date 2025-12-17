@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Born-Haber Cycle Interactive</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Born-Haber Cycle Interactive Activity</h1>
+        <p>The Born-Haber cycle is a thermodynamic approach used to calculate lattice energy by breaking down the formation of an ionic solid into a series of individual steps. Each step represents a specific energy change that can be measured or calculated, allowing us to apply Hess's Law to determine the overall lattice energy.</p>
+    </header>
+
+    <main>
+        <section class="activity-section">
+            <h2>Activity 1: Order the Born-Haber Cycle Steps</h2>
+            <p class="activity-description">Drag and drop the steps below into the correct order for the Born-Haber cycle.</p>
+            
+            <div id="activity">
+                <div id="steps-container">
+                    <h3>Available Steps</h3>
+                    <div class="step" draggable="true" data-step="1">Enthalpy of Formation</div>
+                    <div class="step" draggable="true" data-step="2">Enthalpy of Vaporization</div>
+                    <div class="step" draggable="true" data-step="3">Bond Dissociation Energy</div>
+                    <div class="step" draggable="true" data-step="4">Ionization Energy</div>
+                    <div class="step" draggable="true" data-step="5">Electron Affinity</div>
+                    <div class="step" draggable="true" data-step="6">Lattice Enthalpy</div>
+                    
+                    <div class="help-section">
+                        <button class="help-toggle" aria-expanded="false" aria-controls="help-content">
+                            <span>Need Help? 💡</span>
+                            <span class="help-arrow">▼</span>
+                        </button>
+                        <div id="help-content" class="help-content" aria-hidden="true">
+                            <h4>Born-Haber Cycle Step Order:</h4>
+                            <ol>
+                                <li><strong>Enthalpy of Formation:</strong> The overall energy change when the ionic compound forms from its elements.</li>
+                                <li><strong>Enthalpy of Vaporization:</strong> Energy required to convert the metal from solid to gas phase.</li>
+                                <li><strong>Ionization Energy:</strong> Energy required to remove an electron from the gaseous metal atom.</li>
+                                <li><strong>Bond Dissociation Energy:</strong> Energy required to break the diatomic non-metal molecule into individual atoms.</li>
+                                <li><strong>Electron Affinity:</strong> Energy released when the gaseous non-metal atom gains an electron.</li>
+                                <li><strong>Lattice Enthalpy:</strong> Energy released when gaseous ions combine to form the ionic solid.</li>
+                            </ol>
+                            <p><em>Remember: According to Hess's Law, the sum of all individual steps equals the enthalpy of formation!</em></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="drop-zone">
+                <h3>Drop Zone</h3>
+                <p>Drag the steps here in the correct order:</p>
+                <div id="ordered-steps"></div>
+                <div class="button-group">
+                    <button id="check-order" aria-describedby="order-feedback">Check Order</button>
+                    <button id="reset-order">Reset</button>
+                </div>
+                <div id="order-feedback" role="status" aria-live="polite"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="calculation" class="activity-section">
+            <h2>Activity 2: Calculate Lattice Energy</h2>
+            <p class="activity-description">Use Hess's Law to calculate the lattice energy by inputting the thermodynamic data for each step.</p>
+            
+            <div class="compound-selection">
+                <label for="compound-select">Choose a compound to practice with:</label>
+                <select id="compound-select">
+                    <option value="">-- Select a compound --</option>
+                    <option value="nacl">NaCl (Sodium Chloride)</option>
+                    <option value="mgo">MgO (Magnesium Oxide)</option>
+                    <option value="caf2">CaF₂ (Calcium Fluoride)</option>
+                    <option value="al2o3">Al₂O₃ (Aluminum Oxide)</option>
+                </select>
+            </div>
+            
+            <form id="energy-form">
+                <div class="compound-info">
+                    <h3 id="compound-name">Select a compound above to begin</h3>
+                    <p id="compound-description">Choose a compound from the dropdown to see the relevant thermodynamic data and practice calculating lattice energy.</p>
+                </div>
+                
+                <label for="formation">Enthalpy of Formation (kJ/mol):</label>
+                <input type="number" id="formation" name="formation" required>
+
+                <label for="vaporization">Enthalpy of Vaporization (kJ/mol):</label>
+                <input type="number" id="vaporization" name="vaporization" required>
+
+                <label for="dissociation">Bond Dissociation Energy (kJ/mol):</label>
+                <input type="number" id="dissociation" name="dissociation" required>
+
+                <label for="ionization">Ionization Energy (kJ/mol):</label>
+                <input type="number" id="ionization" name="ionization" required>
+
+                <label for="affinity">Electron Affinity (kJ/mol):</label>
+                <input type="number" id="affinity" name="affinity" required>
+
+                <label for="lattice">Lattice Enthalpy (kJ/mol):</label>
+                <input type="number" id="lattice" name="lattice" required>
+
+                <button type="button" id="calculate">Check Answer</button>
+            </form>
+
+            <div id="result">
+                <h3>Result</h3>
+                <p id="result-text">Enter values to calculate the lattice energy.</p>
+            </div>
+            
+            <div class="help-section">
+                <button class="help-toggle calculation-help" aria-expanded="false" aria-controls="calculation-help-content">
+                    <span>Need Help? 💡</span>
+                    <span class="help-arrow">▼</span>
+                </button>
+                <div id="calculation-help-content" class="help-content" aria-hidden="true">
+                    <h4>How to Apply Hess's Law:</h4>
+                    <p><strong>Hess's Law states:</strong> The total enthalpy change is independent of the pathway taken.</p>
+                    
+                    <div class="calculation-example">
+                        <h5>Example for NaCl formation:</h5>
+                        <p><strong>ΔH<sub>formation</sub> = ΔH<sub>vap</sub> + ΔH<sub>ion</sub> + ½ΔH<sub>dissoc</sub> + ΔH<sub>EA</sub> + ΔH<sub>lattice</sub></strong></p>
+                        
+                        <ul>
+                            <li><strong>Enthalpy of Formation:</strong> Usually negative (exothermic process)</li>
+                            <li><strong>Enthalpy of Vaporization:</strong> Always positive (energy input required)</li>
+                            <li><strong>Ionization Energy:</strong> Always positive (energy input required)</li>
+                            <li><strong>Bond Dissociation Energy:</strong> Always positive (energy input to break bonds)</li>
+                            <li><strong>Electron Affinity:</strong> Usually negative (energy released when electron is gained)</li>
+                            <li><strong>Lattice Enthalpy:</strong> Always negative (energy released when ionic solid forms)</li>
+                        </ul>
+                        
+                        <div class="tip-box">
+                            <p><strong>💡 Tip:</strong> If you know 5 of the 6 values, you can calculate the unknown value by rearranging the equation!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

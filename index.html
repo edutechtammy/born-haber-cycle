@@ -7,25 +7,27 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <header>
         <h1>Born-Haber Cycle Interactive Activity</h1>
         <p>The Born-Haber cycle is a thermodynamic approach used to calculate lattice energy by breaking down the formation of an ionic solid into a series of individual steps. Each step represents a specific energy change that can be measured or calculated, allowing us to apply Hess's Law to determine the overall lattice energy.</p>
     </header>
 
-    <main>
-        <section class="activity-section">
-            <h2>Activity 1: Order the Born-Haber Cycle Steps</h2>
-            <p class="activity-description">Drag and drop the steps below into the correct order for the Born-Haber cycle.</p>
+    <main id="main-content">
+        <section class="activity-section" role="region" aria-labelledby="activity1-heading">
+            <h2 id="activity1-heading">Activity 1: Order the Born-Haber Cycle Steps</h2>
+            <p class="activity-description">Drag and drop the steps below into the correct order for the Born-Haber cycle. <strong>Keyboard users:</strong> Use Tab to navigate, Space to select/deselect, and arrow keys to move selected items.</p>
             
             <div id="activity">
-                <div id="steps-container">
-                    <h3>Available Steps</h3>
-                    <div class="step" draggable="true" data-step="1">Enthalpy of Formation</div>
-                    <div class="step" draggable="true" data-step="2">Enthalpy of Vaporization</div>
-                    <div class="step" draggable="true" data-step="3">Bond Dissociation Energy</div>
-                    <div class="step" draggable="true" data-step="4">Ionization Energy</div>
-                    <div class="step" draggable="true" data-step="5">Electron Affinity</div>
-                    <div class="step" draggable="true" data-step="6">Lattice Enthalpy</div>
+                <div id="steps-container" role="region" aria-labelledby="available-steps-heading">
+                    <h3 id="available-steps-heading">Available Steps</h3>
+                    <div class="step" draggable="true" data-step="1" tabindex="0" role="button" aria-label="Enthalpy of Formation - draggable step 1 of 6" aria-describedby="drag-instructions">Enthalpy of Formation</div>
+                    <div class="step" draggable="true" data-step="2" tabindex="0" role="button" aria-label="Enthalpy of Vaporization - draggable step 2 of 6" aria-describedby="drag-instructions">Enthalpy of Vaporization</div>
+                    <div class="step" draggable="true" data-step="3" tabindex="0" role="button" aria-label="Bond Dissociation Energy - draggable step 3 of 6" aria-describedby="drag-instructions">Bond Dissociation Energy</div>
+                    <div class="step" draggable="true" data-step="4" tabindex="0" role="button" aria-label="Ionization Energy - draggable step 4 of 6" aria-describedby="drag-instructions">Ionization Energy</div>
+                    <div class="step" draggable="true" data-step="5" tabindex="0" role="button" aria-label="Electron Affinity - draggable step 5 of 6" aria-describedby="drag-instructions">Electron Affinity</div>
+                    <div class="step" draggable="true" data-step="6" tabindex="0" role="button" aria-label="Lattice Enthalpy - draggable step 6 of 6" aria-describedby="drag-instructions">Lattice Enthalpy</div>
+                    <div id="drag-instructions" class="sr-only">Use Space to select this step, then arrow keys to move it to the drop zone, and Space again to place it.</div>
                     
                     <div class="help-section">
                         <button class="help-toggle" aria-expanded="false" aria-controls="help-content">
@@ -47,10 +49,11 @@
                     </div>
                 </div>
 
-                <div id="drop-zone">
-                <h3>Drop Zone</h3>
+                <div id="drop-zone" role="region" aria-labelledby="drop-zone-heading">
+                <h3 id="drop-zone-heading">Drop Zone</h3>
                 <p>Drag the steps here in the correct order:</p>
-                <div id="ordered-steps"></div>
+                <div id="ordered-steps" role="list" aria-label="Ordered Born-Haber cycle steps" aria-describedby="drop-zone-status"></div>
+                <div id="drop-zone-status" class="sr-only" aria-live="polite">Drop zone contains 0 steps</div>
                 <div class="button-group">
                     <button id="check-order" aria-describedby="order-feedback">Check Order</button>
                     <button id="reset-order">Reset</button>
@@ -60,8 +63,8 @@
             </div>
         </section>
 
-        <section id="calculation" class="activity-section">
-            <h2>Activity 2: Calculate Lattice Energy</h2>
+        <section id="calculation" class="activity-section" role="region" aria-labelledby="activity2-heading">
+            <h2 id="activity2-heading">Activity 2: Calculate Lattice Energy</h2>
             <p class="activity-description">Use Hess's Law to calculate the lattice energy by inputting the thermodynamic data for each step.</p>
             
             <div class="compound-selection">
@@ -75,31 +78,41 @@
                 </select>
             </div>
             
-            <form id="energy-form">
-                <div class="compound-info">
+            <form id="energy-form" role="form" aria-labelledby="activity2-heading">
+                <div class="compound-info" role="status" aria-live="polite">
                     <h3 id="compound-name">Select a compound above to begin</h3>
                     <p id="compound-description">Choose a compound from the dropdown to see the relevant thermodynamic data and practice calculating lattice energy.</p>
                 </div>
                 
-                <label for="formation">Enthalpy of Formation (kJ/mol):</label>
-                <input type="number" id="formation" name="formation" required>
+                <fieldset>
+                    <legend class="sr-only">Thermodynamic Values for Born-Haber Cycle Calculation</legend>
+                    
+                    <label for="formation">Enthalpy of Formation (kJ/mol):</label>
+                    <input type="number" id="formation" name="formation" required aria-describedby="formation-help" step="0.1">
+                    <div id="formation-help" class="sr-only">Enter the enthalpy of formation value in kilojoules per mole</div>
 
-                <label for="vaporization">Enthalpy of Vaporization (kJ/mol):</label>
-                <input type="number" id="vaporization" name="vaporization" required>
+                    <label for="vaporization">Enthalpy of Vaporization (kJ/mol):</label>
+                    <input type="number" id="vaporization" name="vaporization" required aria-describedby="vaporization-help" step="0.1">
+                    <div id="vaporization-help" class="sr-only">Enter the enthalpy of vaporization value in kilojoules per mole</div>
 
-                <label for="dissociation">Bond Dissociation Energy (kJ/mol):</label>
-                <input type="number" id="dissociation" name="dissociation" required>
+                    <label for="dissociation">Bond Dissociation Energy (kJ/mol):</label>
+                    <input type="number" id="dissociation" name="dissociation" required aria-describedby="dissociation-help" step="0.1">
+                    <div id="dissociation-help" class="sr-only">Enter the bond dissociation energy value in kilojoules per mole</div>
 
-                <label for="ionization">Ionization Energy (kJ/mol):</label>
-                <input type="number" id="ionization" name="ionization" required>
+                    <label for="ionization">Ionization Energy (kJ/mol):</label>
+                    <input type="number" id="ionization" name="ionization" required aria-describedby="ionization-help" step="0.1">
+                    <div id="ionization-help" class="sr-only">Enter the ionization energy value in kilojoules per mole</div>
 
-                <label for="affinity">Electron Affinity (kJ/mol):</label>
-                <input type="number" id="affinity" name="affinity" required>
+                    <label for="affinity">Electron Affinity (kJ/mol):</label>
+                    <input type="number" id="affinity" name="affinity" required aria-describedby="affinity-help" step="0.1">
+                    <div id="affinity-help" class="sr-only">Enter the electron affinity value in kilojoules per mole</div>
 
-                <label for="lattice">Lattice Enthalpy (kJ/mol):</label>
-                <input type="number" id="lattice" name="lattice" required>
+                    <label for="lattice">Lattice Enthalpy (kJ/mol):</label>
+                    <input type="number" id="lattice" name="lattice" required aria-describedby="lattice-help" step="0.1">
+                    <div id="lattice-help" class="sr-only">Enter the lattice enthalpy value in kilojoules per mole</div>
+                </fieldset>
 
-                <button type="button" id="calculate">Check Answer</button>
+                <button type="button" id="calculate" aria-describedby="result-text">Check Answer</button>
             </form>
 
             <div id="result">

@@ -10,6 +10,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const compoundSelect = document.getElementById("compound-select");
     const compoundName = document.getElementById("compound-name");
     const compoundDescription = document.getElementById("compound-description");
+    const dropZoneStatus = document.getElementById("drop-zone-status");
+
+    // Keyboard navigation state
+    let selectedStep = null;
+    let keyboardMode = false;
 
     // Compound data sets
     const compoundData = {
@@ -105,6 +110,135 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // Accessibility and Keyboard Navigation Functions
+    function updateDropZoneStatus() {
+        const stepsInDropZone = dropZone.querySelectorAll('.step');
+        const count = stepsInDropZone.length;
+        dropZoneStatus.textContent = `Drop zone contains ${count} step${count !== 1 ? 's' : ''}${count > 0 ? ': ' + Array.from(stepsInDropZone).map(step => step.textContent).join(', ') : ''}`;
+    }
+
+    function announceToScreenReader(message) {
+        const announcement = document.createElement('div');
+        announcement.setAttribute('aria-live', 'polite');
+        announcement.setAttribute('aria-atomic', 'true');
+        announcement.classList.add('sr-only');
+        announcement.textContent = message;
+        document.body.appendChild(announcement);
+
+        setTimeout(() => {
+            document.body.removeChild(announcement);
+        }, 1000);
+    }
+
+    function selectStep(stepElement) {
+        // Clear previous selection
+        document.querySelectorAll('.step.selected').forEach(step => {
+            step.classList.remove('selected');
+            step.setAttribute('aria-pressed', 'false');
+        });
+
+        if (stepElement) {
+            selectedStep = stepElement;
+            stepElement.classList.add('selected');
+            stepElement.setAttribute('aria-pressed', 'true');
+            announceToScreenReader(`Selected ${stepElement.textContent}. Use arrow keys to move or Space to deselect.`);
+        } else {
+            selectedStep = null;
+        }
+    }
+
+    function moveStepToContainer(step, targetContainer) {
+        const wasInDropZone = step.parentElement === dropZone;
+
+        if (targetContainer === dropZone) {
+            step.draggable = false;
+            step.setAttribute('role', 'listitem');
+        } else {
+            step.draggable = true;
+            step.setAttribute('role', 'button');
+        }
+
+        targetContainer.appendChild(step);
+        updateDropZoneStatus();
+
+        const locationText = targetContainer === dropZone ? 'drop zone' : 'available steps';
+        announceToScreenReader(`Moved ${step.textContent} to ${locationText}`);
+    }
+
+    // Keyboard Navigation for Draggable Steps
+    document.addEventListener('keydown', (e) => {
+        const focusedElement = document.activeElement;
+
+        // Only handle if focused on a step
+        if (!focusedElement.classList.contains('step')) return;
+
+        keyboardMode = true;
+
+        switch (e.key) {
+            case ' ': // Space - Select/deselect step
+                e.preventDefault();
+                if (selectedStep === focusedElement) {
+                    selectStep(null); // Deselect
+                } else {
+                    selectStep(focusedElement); // Select
+                }
+                break;
+
+            case 'ArrowRight':
+            case 'ArrowDown':
+                e.preventDefault();
+                if (selectedStep && selectedStep.parentElement === stepsContainer) {
+                    // Move selected step to drop zone
+                    selectedStep.classList.add('keyboard-moving');
+                    setTimeout(() => {
+                        moveStepToContainer(selectedStep, dropZone);
+                        selectedStep.classList.remove('keyboard-moving');
+                        selectedStep.focus();
+                        selectStep(null);
+                    }, 300);
+                }
+                break;
+
+            case 'ArrowLeft':
+            case 'ArrowUp':
+                e.preventDefault();
+                if (selectedStep && selectedStep.parentElement === dropZone) {
+                    // Move selected step back to steps container
+                    selectedStep.classList.add('keyboard-moving');
+                    setTimeout(() => {
+                        moveStepToContainer(selectedStep, stepsContainer);
+                        selectedStep.classList.remove('keyboard-moving');
+                        selectedStep.focus();
+                        selectStep(null);
+                    }, 300);
+                }
+                break;
+
+            case 'Escape':
+                e.preventDefault();
+                selectStep(null);
+                break;
+        }
+    });
+
+    // Add click handlers for steps to support both mouse and keyboard
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('step') && keyboardMode) {
+            e.preventDefault();
+            if (selectedStep === e.target) {
+                selectStep(null);
+            } else {
+                selectStep(e.target);
+            }
+        }
+    });
+
+    // Track mouse usage to disable keyboard mode when appropriate
+    document.addEventListener('mousedown', () => {
+        keyboardMode = false;
+        selectStep(null);
+    });
+
     // Help Accordion Functionality for all accordions
     helpToggles.forEach((helpToggle) => {
         const helpContentId = helpToggle.getAttribute("aria-controls");
@@ -139,6 +273,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     dropZone.addEventListener("drop", (e) => {
         e.preventDefault();
+        dropZone.classList.remove('drag-over');
         const stepId = e.dataTransfer.getData("text/plain");
         const stepElement = document.querySelector(`#steps-container .step[data-step='${stepId}']`);
 
@@ -146,9 +281,18 @@ document.addEventListener("DOMContentLoaded", () => {
         const existingStep = dropZone.querySelector(`.step[data-step='${stepId}']`);
 
         if (stepElement && !existingStep) {
-            // Move the element instead of cloning it
-            stepElement.draggable = false;
-            dropZone.appendChild(stepElement);
+            moveStepToContainer(stepElement, dropZone);
+        }
+    });
+
+    dropZone.addEventListener("dragenter", (e) => {
+        e.preventDefault();
+        dropZone.classList.add('drag-over');
+    });
+
+    dropZone.addEventListener("dragleave", (e) => {
+        if (!dropZone.contains(e.relatedTarget)) {
+            dropZone.classList.remove('drag-over');
         }
     });
 
@@ -163,9 +307,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const stepElement = document.querySelector(`#ordered-steps .step[data-step='${stepId}']`);
 
         if (stepElement) {
-            // Move the element back and make it draggable again
-            stepElement.draggable = true;
-            stepsContainer.appendChild(stepElement);
+            moveStepToContainer(stepElement, stepsContainer);
         }
     });
 
@@ -274,12 +416,17 @@ document.addEventListener("DOMContentLoaded", () => {
         const stepsInDropZone = Array.from(document.querySelectorAll("#ordered-steps .step"));
 
         stepsInDropZone.forEach(step => {
-            step.draggable = true;
-            stepsContainer.appendChild(step);
+            moveStepToContainer(step, stepsContainer);
         });
 
-        // Clear any feedback
+        // Clear any feedback and selection
         orderFeedback.textContent = "";
         orderFeedback.className = "";
+        selectStep(null);
+
+        announceToScreenReader("All steps have been reset to the available steps area.");
     });
+
+    // Initialize drop zone status
+    updateDropZoneStatus();
 });
